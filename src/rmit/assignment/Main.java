@@ -1,31 +1,61 @@
 package rmit.assignment;
 
+import rmit.assignment.api.StudentEnrolmentManager;
 import rmit.assignment.entity.Course;
 import rmit.assignment.entity.Student;
+import rmit.assignment.entity.StudentEnrollment;
+import rmit.assignment.impl.StudentEnrolmentManagerImpl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     private List<Student> studentList = new ArrayList<>();
     private List<Course> courseList = new ArrayList<>();
     private String pattern = "yyyy-MM-dd";
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+    private StudentEnrolmentManager studentEnrolmentManager = new StudentEnrolmentManagerImpl();
 
 
     public static void main(String[] args) {
         Main mainEntry = new Main();
+        mainEntry.createData();
+        mainEntry.enroll();
 
+    }
+
+
+    private void enroll() {
+        //enter student, id and course
+        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
+        String studentName = myObj.nextLine();  // Read user input
+
+        System.out.println("Enter Course (Ex: 'Math for computing', 'Robotic', 'Web for programming', 'Business', 'Programming': ");
+        String courseName = myObj.nextLine();
+
+        System.out.println("Enter Semester: ");
+        String semester = myObj.nextLine();
+
+
+        Student student = findStudentBy(studentName);
+        Course course = findCourseBy(courseName);
+        StudentEnrollment studentEnrollment = new StudentEnrollment(student, course, semester);
+        studentEnrolmentManager.add(studentEnrollment);
+    }
+
+    private void createData() {
         try {
-            mainEntry.createStudentData();
+            createStudentData();
         } catch (ParseException pe) {
             System.out.println("Can not parse date: " + pe);
         }
 
-        mainEntry.createCourseDate();
+        createCourseDate();
 
     }
 
@@ -64,6 +94,27 @@ public class Main {
         courseList.add(webProgramming);
         courseList.add(robotic);
 
+    }
+
+    private Student findStudentBy(String name) {
+        for (Student item : studentList) {
+            if (item.getName().equalsIgnoreCase(name)) {
+                return item;
+            }
+        }
+
+        return null;
+
+
+    }
+
+    private Course findCourseBy(String name) {
+        for (Course item : courseList) {
+            if (item.getName().equalsIgnoreCase(name)) {
+                return item;
+            }
+        }
+        return null;
     }
 
 }
