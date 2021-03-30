@@ -30,6 +30,16 @@ public class Main {
 
     }
 
+
+    private void checkStudentNameIsValid(String studentName) throws Exception {
+        for (Student student : studentList) {
+            if (student.getName().equalsIgnoreCase(studentName)) {
+                return;
+            }
+        }
+        throw new Exception();
+    }
+
     private void processAction() {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Do you want to 'UPDATE' or 'ENROLL'? ");
@@ -37,12 +47,7 @@ public class Main {
         if (action.equalsIgnoreCase(UPDATE)) {
             update();
         } else {
-
-            //enter student, id and course
-            myObj = new Scanner(System.in);  // Create a Scanner object
-            System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
-            String studentName = myObj.nextLine();  // Read user input
-            enroll(studentName);
+            processEnroll();
         }
 
         myObj = new Scanner(System.in);  // Create a Scanner object
@@ -56,10 +61,33 @@ public class Main {
 
     }
 
+
+    private void processEnroll() {
+        //enter student, id and course
+        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
+        String studentName = myObj.nextLine();  // Read user input
+        try {
+            checkStudentNameIsValid(studentName);
+        } catch (Exception e) {
+            System.out.println("This student name is not valid in this system !! ");
+            processEnroll();
+        }
+
+        enroll(studentName);
+    }
+
     private void update() {
         Scanner scanner = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
         String studentName = scanner.nextLine();  // Read user input
+        try {
+            checkStudentNameIsValid(studentName);
+        } catch (Exception e) {
+            System.out.println("This student name is not valid in this system !! ");
+            update();
+        }
+
         viewEnrollmentBy(studentName);
 
         scanner = new Scanner(System.in);  // Create a Scanner object
