@@ -37,7 +37,12 @@ public class Main {
         if (action.equalsIgnoreCase(UPDATE)) {
             update();
         } else {
-            enroll();
+
+            //enter student, id and course
+            myObj = new Scanner(System.in);  // Create a Scanner object
+            System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
+            String studentName = myObj.nextLine();  // Read user input
+            enroll(studentName);
         }
 
         myObj = new Scanner(System.in);  // Create a Scanner object
@@ -52,9 +57,27 @@ public class Main {
     }
 
     private void update() {
-        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        Scanner scanner = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
-        String studentName = myObj.nextLine();  // Read user input
+        String studentName = scanner.nextLine();  // Read user input
+        viewEnrollmentBy(studentName);
+
+        scanner = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Do you want to 'ADD' or 'DELETE' course ? ");
+        String confirmation = scanner.nextLine();  // Read user input
+        if (confirmation.equalsIgnoreCase("DELETE")) {
+            scanner = new Scanner(System.in);  // Create a Scanner object
+            System.out.println("Enter semester that you want to delete: ");
+            String semester = scanner.nextLine();  // Read user input
+            studentEnrolmentManager.delete(studentName, semester);
+            System.out.println("The list of course after deleting is: ");
+            viewEnrollmentBy(studentName);
+        } else {
+            enroll(studentName);
+        }
+    }
+
+    private void viewEnrollmentBy(String studentName) {
         List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAllBy(studentName);
         for (StudentEnrollment item : studentEnrollmentList) {
             System.out.println("Semester: " + item.getSemester());
@@ -64,12 +87,8 @@ public class Main {
 
     }
 
-    private void enroll() {
-        //enter student, id and course
+    private void enroll(String studentName) {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-        System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
-        String studentName = myObj.nextLine();  // Read user input
-
         System.out.println("Enter Course (Ex: 'Math for computing', 'Robotic', 'Web for programming', 'Business', 'Programming': ");
         String courseName = myObj.nextLine();
 
@@ -81,6 +100,8 @@ public class Main {
         Course course = findCourseBy(courseName);
         StudentEnrollment studentEnrollment = new StudentEnrollment(student, course, semester);
         studentEnrolmentManager.add(studentEnrollment);
+        System.out.println("The list of course after adding is: ");
+        viewEnrollmentBy(studentName);
     }
 
     private void createData() {
