@@ -19,15 +19,50 @@ public class Main {
     private String pattern = "yyyy-MM-dd";
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
     private StudentEnrolmentManager studentEnrolmentManager = new StudentEnrolmentManagerImpl();
+    private static final String UPDATE = "UPDATE";
 
 
     public static void main(String[] args) {
         Main mainEntry = new Main();
         mainEntry.createData();
-        mainEntry.enroll();
+        mainEntry.processAction();
+
 
     }
 
+    private void processAction() {
+        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Do you want to 'UPDATE' or 'ENROLL'? ");
+        String action = myObj.nextLine();  // Read user input
+        if (action.equalsIgnoreCase(UPDATE)) {
+            update();
+        } else {
+            enroll();
+        }
+
+        myObj = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Do you want to continue 'Y' or 'N'? ");
+        String comfirmation = myObj.nextLine();  // Read user input
+
+        if (comfirmation.equalsIgnoreCase("Y")) {
+            processAction();
+
+        }
+
+    }
+
+    private void update() {
+        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
+        String studentName = myObj.nextLine();  // Read user input
+        List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAllBy(studentName);
+        for (StudentEnrollment item : studentEnrollmentList) {
+            System.out.println("Semester: " + item.getSemester());
+            System.out.println("Course name: " + item.getCourse().getName());
+            System.out.println("------------------------");
+        }
+
+    }
 
     private void enroll() {
         //enter student, id and course
