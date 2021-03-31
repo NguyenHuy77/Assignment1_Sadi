@@ -40,6 +40,15 @@ public class Main {
         throw new Exception();
     }
 
+    private void checkCourseNameIsValid(String courseName) throws Exception {
+        for (Course course : courseList) {
+            if (course.getName().equalsIgnoreCase(courseName)) {
+                return;
+            }
+        }
+        throw new Exception();
+    }
+
     private void processAction() {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Do you want to 'UPDATE' or 'ENROLL'? ");
@@ -117,19 +126,25 @@ public class Main {
 
     private void enroll(String studentName) {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-        System.out.println("Enter Course (Ex: 'Math for computing', 'Robotic', 'Web for programming', 'Business', 'Programming': ");
+        System.out.println("Enter Course (Ex: 'Math for computing', 'Robotic', 'Web for programming', 'Business', 'Programming'): ");
         String courseName = myObj.nextLine();
+        try {
+            checkCourseNameIsValid(courseName);
+        } catch (Exception e) {
+            System.out.println("This course name is not valid in this system !! ");
+            enroll(studentName);
+        }
 
         System.out.println("Enter Semester: ");
         String semester = myObj.nextLine();
-
 
         Student student = findStudentBy(studentName);
         Course course = findCourseBy(courseName);
         StudentEnrollment studentEnrollment = new StudentEnrollment(student, course, semester);
         studentEnrolmentManager.add(studentEnrollment);
-        System.out.println("The list of course after adding is: ");
+        System.out.println("The list course of" + " " + studentName + " " + "after adding is: ");
         viewEnrollmentBy(studentName);
+        processAction();
     }
 
     private void createData() {
