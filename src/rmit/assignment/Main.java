@@ -35,12 +35,7 @@ public class Main {
     private void print() {
         try {
 
-            // Our example data
-            List<List<String>> rows = Arrays.asList(
-                    Arrays.asList("Huy", "author", "Java"),
-                    Arrays.asList("Nam", "editor", "Python"),
-                    Arrays.asList("Nhut", "editor", "Node.js")
-            );
+            List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAll();
 
             FileWriter csvWriter = new FileWriter("C:\\assignment\\report.csv");
             csvWriter.append("STUDENT NAME");
@@ -50,10 +45,35 @@ public class Main {
             csvWriter.append("SEMESTER");
             csvWriter.append("\n");
 
-            for (List<String> rowData : rows) {
-                csvWriter.append(String.join(",", rowData));
-                csvWriter.append("\n");
+            Map<String, List<StudentEnrollment>> map = new HashMap<>();
+            for (StudentEnrollment item : studentEnrollmentList) {
+                List<StudentEnrollment> list = map.get(item.getStudent().getName());
+                if (list == null) {
+                    list = new ArrayList<>();
+                    map.put(item.getStudent().getName(), list);
+                }
+                list.add(item);
             }
+
+            for (Map.Entry<String, List<StudentEnrollment>> entry : map.entrySet()) {
+                String name = entry.getKey();
+                List<StudentEnrollment> list = entry.getValue();
+
+                for (int i = 0; i < list.size(); i++) {
+                    StudentEnrollment item= list.get(i);
+                    if (i==0){
+                        csvWriter.append(name + "," + item.getCourse().getName() + "," + item.getSemester());
+                    } else {
+                        csvWriter.append("" + "," + item.getCourse().getName() + "," + item.getSemester());
+                    }
+
+                    csvWriter.append("\n");
+
+                }
+                csvWriter.append("\n");
+
+            }
+
 
             csvWriter.flush();
             csvWriter.close();
@@ -100,19 +120,19 @@ public class Main {
 
     }
 
-    private void checkContinue() {
+    private void checkContinuing() {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Do you want to continue 'Y' or 'N'? ");
         String confirmation = myObj.nextLine();  // Read user input
 
-        if (confirmation.equalsIgnoreCase("Y")) {
+        if (confirmation.trim().equalsIgnoreCase("Y")) {
             processAction();
-        } else if (confirmation.equalsIgnoreCase("N")) {
+        } else if (confirmation.trim().equalsIgnoreCase("N")) {
             print();
         } else {
             System.out.println("Your choice is invalid !!!");
             System.out.println("Try Again With (Y/N) only !");
-            checkContinue();
+            checkContinuing();
         }
 
     }
@@ -136,18 +156,25 @@ public class Main {
         Scanner scanner = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
         String studentName = scanner.nextLine();  // Read user input
-        System.out.println("------------------------");
-        System.out.println("The list course & semester of" + " "+ studentName + " " + "is:");
-        System.out.println("------------------------");
         try {
             checkStudentNameIsValid(studentName);
+            System.out.println("------------------------");
+            System.out.println("The list course & semester of" + " " + studentName + " " + "is:");
+            System.out.println("------------------------");
+            viewEnrollmentBy(studentName);
+            checkAddAndDeleteInputInvalid(studentName);
+            checkContinuing();
+
         } catch (Exception e) {
             System.out.println("This student name is not valid in this system !! ");
             update();
         }
 
+    }
+
+    private void checkAddAndDeleteInputInvalid(String studentName) {
         viewEnrollmentBy(studentName);
-        scanner = new Scanner(System.in);  // Create a Scanner object
+        Scanner scanner = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Do you want to 'ADD' or 'DELETE' course ? ");
         String confirmation = scanner.nextLine();  // Read user input
         if (confirmation.equalsIgnoreCase(DELETE)) {
@@ -158,12 +185,14 @@ public class Main {
             System.out.println("The list of course after deleting is: ");
             System.out.println("------------------------");
             viewEnrollmentBy(studentName);
-            checkContinue();
+            checkContinuing();
         } else if (confirmation.equalsIgnoreCase(ADD)) {
             enroll(studentName);
         } else {
-
+            System.out.println("Your input is invalid in the system !!! ");
+            checkAddAndDeleteInputInvalid(studentName);
         }
+
     }
 
     private void viewEnrollmentBy(String studentName) {
@@ -198,7 +227,7 @@ public class Main {
         System.out.println("The list course of" + " " + studentName + " " + "after adding/enrolling is: ");
         System.out.println("------------------------");
         viewEnrollmentBy(studentName);
-        checkContinue();
+        checkContinuing();
     }
 
     private void createData() {
@@ -222,7 +251,7 @@ public class Main {
         date = simpleDateFormat.parse("1997-11-08");
         Student tung = new Student(3, "Tung", date);
 
-        date = simpleDateFormat.parse("1996-12-0fdgfdg3");
+        date = simpleDateFormat.parse("1996-12-03");
         Student tuyet = new Student(4, "Tuyet", date);
 
         date = simpleDateFormat.parse("1994-9-1");
