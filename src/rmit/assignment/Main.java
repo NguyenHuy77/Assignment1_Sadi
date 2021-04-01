@@ -1,17 +1,16 @@
 package rmit.assignment;
 
+
 import rmit.assignment.api.StudentEnrolmentManager;
 import rmit.assignment.entity.Course;
 import rmit.assignment.entity.Student;
 import rmit.assignment.entity.StudentEnrollment;
 import rmit.assignment.impl.StudentEnrolmentManagerImpl;
 
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     private List<Student> studentList = new ArrayList<>();
@@ -20,13 +19,49 @@ public class Main {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
     private StudentEnrolmentManager studentEnrolmentManager = new StudentEnrolmentManagerImpl();
     private static final String UPDATE = "UPDATE";
-
+    private static final String ENROLL = "ENROLL";
+    private static final String DELETE = "DELETE";
+    private static final String ADD = "ADD";
+    private static String[] HEADERS = {"STUDENT", "COURSE", "SEMESTER"};
 
     public static void main(String[] args) {
         Main mainEntry = new Main();
         mainEntry.createData();
         mainEntry.processAction();
+        mainEntry.print();
 
+    }
+
+    private void print() {
+        try {
+
+            // Our example data
+            List<List<String>> rows = Arrays.asList(
+                    Arrays.asList("Huy", "author", "Java"),
+                    Arrays.asList("Nam", "editor", "Python"),
+                    Arrays.asList("Nhut", "editor", "Node.js")
+            );
+
+            FileWriter csvWriter = new FileWriter("C:\\assignment\\report.csv");
+            csvWriter.append("STUDENT NAME");
+            csvWriter.append(",");
+            csvWriter.append("COURSE NAME");
+            csvWriter.append(",");
+            csvWriter.append("SEMESTER");
+            csvWriter.append("\n");
+
+            for (List<String> rowData : rows) {
+                csvWriter.append(String.join(",", rowData));
+                csvWriter.append("\n");
+            }
+
+            csvWriter.flush();
+            csvWriter.close();
+        } catch (FileNotFoundException fe) {
+            System.out.println("Can not read this file");
+        } catch (IOException e) {
+            System.out.println("Can not parse this file");
+        }
 
     }
 
@@ -53,23 +88,34 @@ public class Main {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Do you want to 'UPDATE' or 'ENROLL'? ");
         String action = myObj.nextLine();  // Read user input
+
         if (action.equalsIgnoreCase(UPDATE)) {
             update();
-        } else {
+        } else if (action.equalsIgnoreCase(ENROLL)) {
             processEnroll();
-        }
-
-        myObj = new Scanner(System.in);  // Create a Scanner object
-        System.out.println("Do you want to continue 'Y' or 'N'? ");
-        String comfirmation = myObj.nextLine();  // Read user input
-
-        if (comfirmation.equalsIgnoreCase("Y")) {
+        } else {
+            System.out.println("This input is invalid in this system !!!");
             processAction();
-
         }
 
     }
 
+    private void checkContinue() {
+        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Do you want to continue 'Y' or 'N'? ");
+        String confirmation = myObj.nextLine();  // Read user input
+
+        if (confirmation.equalsIgnoreCase("Y")) {
+            processAction();
+        } else if (confirmation.equalsIgnoreCase("N")) {
+            print();
+        } else {
+            System.out.println("Your choice is invalid !!!");
+            System.out.println("Try Again With (Y/N) only !");
+            checkContinue();
+        }
+
+    }
 
     private void processEnroll() {
         //enter student, id and course
@@ -90,6 +136,9 @@ public class Main {
         Scanner scanner = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
         String studentName = scanner.nextLine();  // Read user input
+        System.out.println("------------------------");
+        System.out.println("The list course & semester of" + " "+ studentName + " " + "is:");
+        System.out.println("------------------------");
         try {
             checkStudentNameIsValid(studentName);
         } catch (Exception e) {
@@ -98,19 +147,22 @@ public class Main {
         }
 
         viewEnrollmentBy(studentName);
-
         scanner = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Do you want to 'ADD' or 'DELETE' course ? ");
         String confirmation = scanner.nextLine();  // Read user input
-        if (confirmation.equalsIgnoreCase("DELETE")) {
+        if (confirmation.equalsIgnoreCase(DELETE)) {
             scanner = new Scanner(System.in);  // Create a Scanner object
             System.out.println("Enter semester that you want to delete: ");
             String semester = scanner.nextLine();  // Read user input
             studentEnrolmentManager.delete(studentName, semester);
             System.out.println("The list of course after deleting is: ");
+            System.out.println("------------------------");
             viewEnrollmentBy(studentName);
-        } else {
+            checkContinue();
+        } else if (confirmation.equalsIgnoreCase(ADD)) {
             enroll(studentName);
+        } else {
+
         }
     }
 
@@ -126,7 +178,7 @@ public class Main {
 
     private void enroll(String studentName) {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-        System.out.println("Enter Course (Ex: 'Math for computing', 'Robotic', 'Web for programming', 'Business', 'Programming'): ");
+        System.out.println("Enter Course (Ex: 'Math for computing', 'Robotic', 'Database concept', 'Business', 'Programming'): ");
         String courseName = myObj.nextLine();
         try {
             checkCourseNameIsValid(courseName);
@@ -142,9 +194,11 @@ public class Main {
         Course course = findCourseBy(courseName);
         StudentEnrollment studentEnrollment = new StudentEnrollment(student, course, semester);
         studentEnrolmentManager.add(studentEnrollment);
-        System.out.println("The list course of" + " " + studentName + " " + "after adding is: ");
+        System.out.println("------------------------");
+        System.out.println("The list course of" + " " + studentName + " " + "after adding/enrolling is: ");
+        System.out.println("------------------------");
         viewEnrollmentBy(studentName);
-        processAction();
+        checkContinue();
     }
 
     private void createData() {
@@ -154,7 +208,7 @@ public class Main {
             System.out.println("Can not parse date: " + pe);
         }
 
-        createCourseDate();
+        createCourseData();
 
     }
 
@@ -168,7 +222,7 @@ public class Main {
         date = simpleDateFormat.parse("1997-11-08");
         Student tung = new Student(3, "Tung", date);
 
-        date = simpleDateFormat.parse("1996-12-03");
+        date = simpleDateFormat.parse("1996-12-0fdgfdg3");
         Student tuyet = new Student(4, "Tuyet", date);
 
         date = simpleDateFormat.parse("1994-9-1");
@@ -181,11 +235,11 @@ public class Main {
         studentList.add(hung);
     }
 
-    private void createCourseDate() {
+    private void createCourseData() {
         Course math = new Course(1, "Math for computing", 12);
         Course programming = new Course(2, "Programming", 12);
         Course business = new Course(3, "Business", 12);
-        Course webProgramming = new Course(4, "Web Programming", 12);
+        Course webProgramming = new Course(4, "Database concept", 12);
         Course robotic = new Course(5, "Robotic", 12);
         courseList.add(math);
         courseList.add(programming);
@@ -203,8 +257,6 @@ public class Main {
         }
 
         return null;
-
-
     }
 
     private Course findCourseBy(String name) {
