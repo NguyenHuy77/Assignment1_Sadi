@@ -244,7 +244,6 @@ public class Main {
             System.out.println("------------------------");
             viewEnrollmentBy(studentName);
             checkAddAndDeleteInputInvalid(studentName);
-            checkContinuing();
 
         } catch (Exception e) {
             System.out.println("This student name is not valid in this system !! ");
