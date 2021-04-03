@@ -1,6 +1,5 @@
 package rmit.assignment;
 
-
 import rmit.assignment.api.StudentEnrolmentManager;
 import rmit.assignment.entity.Course;
 import rmit.assignment.entity.Student;
@@ -28,52 +27,27 @@ public class Main {
         Main mainEntry = new Main();
         mainEntry.createData();
         mainEntry.processAction();
-        mainEntry.print();
 
     }
 
     private void print() {
         try {
 
-            List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAll();
-
             FileWriter csvWriter = new FileWriter("C:\\assignment\\report.csv");
-            csvWriter.append("STUDENT NAME");
-            csvWriter.append(",");
-            csvWriter.append("COURSE NAME");
-            csvWriter.append(",");
-            csvWriter.append("SEMESTER");
+            //Print by student name
+
+            printByStudentName(csvWriter);
             csvWriter.append("\n");
 
-            Map<String, List<StudentEnrollment>> map = new HashMap<>();
-            for (StudentEnrollment item : studentEnrollmentList) {
-                List<StudentEnrollment> list = map.get(item.getStudent().getName());
-                if (list == null) {
-                    list = new ArrayList<>();
-                    map.put(item.getStudent().getName(), list);
-                }
-                list.add(item);
-            }
+            //Print by course name
 
-            for (Map.Entry<String, List<StudentEnrollment>> entry : map.entrySet()) {
-                String name = entry.getKey();
-                List<StudentEnrollment> list = entry.getValue();
+            printByCourseName(csvWriter);
+            csvWriter.append("\n");
 
-                for (int i = 0; i < list.size(); i++) {
-                    StudentEnrollment item= list.get(i);
-                    if (i==0){
-                        csvWriter.append(name + "," + item.getCourse().getName() + "," + item.getSemester());
-                    } else {
-                        csvWriter.append("" + "," + item.getCourse().getName() + "," + item.getSemester());
-                    }
+            //Print by course name
 
-                    csvWriter.append("\n");
-
-                }
-                csvWriter.append("\n");
-
-            }
-
+            printBySemester(csvWriter);
+            csvWriter.append("\n");
 
             csvWriter.flush();
             csvWriter.close();
@@ -82,9 +56,115 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Can not parse this file");
         }
-
     }
 
+    private void printBySemester(FileWriter csvWriter) throws IOException {
+        csvWriter.append("\n");
+        csvWriter.append("SEMESTER");
+        csvWriter.append(",");
+        csvWriter.append("STUDENT NAME");
+        csvWriter.append(",");
+        csvWriter.append("COURSE NAME");
+        csvWriter.append("\n");
+        Map<String, List<StudentEnrollment>> map = new HashMap<>();
+        List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAll();
+        for (StudentEnrollment item : studentEnrollmentList) {
+            List<StudentEnrollment> list = map.get(item.getSemester());
+            if (list == null) {
+                list = new ArrayList<>();
+                map.put(item.getSemester(), list);
+            }
+            list.add(item);
+        }
+        for (Map.Entry<String, List<StudentEnrollment>> entry : map.entrySet()) {
+            String semester = entry.getKey();
+            List<StudentEnrollment> list = entry.getValue();
+
+            for (int i = 0; i < list.size(); i++) {
+                StudentEnrollment item = list.get(i);
+                if (i == 0) {
+                    csvWriter.append(semester + "," + item.getStudent().getName() + "," + item.getCourse().getName());
+                } else {
+                    csvWriter.append("" + "," + item.getStudent().getName() + "," + item.getCourse().getName());
+                }
+                csvWriter.append("\n");
+            }
+            csvWriter.append("\n");
+
+        }
+    }
+
+
+    private void printByStudentName(FileWriter csvWriter) throws IOException {
+        csvWriter.append("STUDENT NAME");
+        csvWriter.append(",");
+        csvWriter.append("COURSE NAME");
+        csvWriter.append(",");
+        csvWriter.append("SEMESTER");
+        csvWriter.append("\n");
+        Map<String, List<StudentEnrollment>> map = new HashMap<>();
+        List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAll();
+        for (StudentEnrollment item : studentEnrolmentManager.getAll()) {
+            List<StudentEnrollment> list = map.get(item.getStudent().getName());
+            if (list == null) {
+                list = new ArrayList<>();
+                map.put(item.getStudent().getName(), list);
+            }
+            list.add(item);
+        }
+        for (Map.Entry<String, List<StudentEnrollment>> entry : map.entrySet()) {
+            String name = entry.getKey();
+            List<StudentEnrollment> list = entry.getValue();
+
+            for (int i = 0; i < list.size(); i++) {
+                StudentEnrollment item = list.get(i);
+                if (i == 0) {
+                    csvWriter.append(name + "," + item.getCourse().getName() + "," + item.getSemester());
+                } else {
+                    csvWriter.append("" + "," + item.getCourse().getName() + "," + item.getSemester());
+                }
+                csvWriter.append("\n");
+            }
+            csvWriter.append("\n");
+
+        }
+    }
+
+    private void printByCourseName(FileWriter csvWriter) throws IOException {
+        csvWriter.append("\n");
+        csvWriter.append("COURSE NAME");
+        csvWriter.append(",");
+        csvWriter.append("STUDENT NAME");
+        csvWriter.append(",");
+        csvWriter.append("SEMESTER");
+        csvWriter.append("\n");
+        Map<String, List<StudentEnrollment>> map = new HashMap<>();
+        List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAll();
+        for (StudentEnrollment item : studentEnrollmentList) {
+            List<StudentEnrollment> list = map.get(item.getCourse().getName());
+            if (list == null) {
+                list = new ArrayList<>();
+                map.put(item.getCourse().getName(), list);
+            }
+            list.add(item);
+        }
+        for (Map.Entry<String, List<StudentEnrollment>> entry : map.entrySet()) {
+            String courseName = entry.getKey();
+            List<StudentEnrollment> list = entry.getValue();
+
+            for (int i = 0; i < list.size(); i++) {
+                StudentEnrollment item = list.get(i);
+                if (i == 0) {
+                    csvWriter.append(courseName + "," + item.getStudent().getName() + "," + item.getSemester());
+                } else {
+                    csvWriter.append("" + "," + item.getStudent().getName() + "," + item.getSemester());
+                }
+                csvWriter.append("\n");
+            }
+            csvWriter.append("\n");
+
+        }
+    }
 
     private void checkStudentNameIsValid(String studentName) throws Exception {
         for (Student student : studentList) {
@@ -129,6 +209,7 @@ public class Main {
             processAction();
         } else if (confirmation.trim().equalsIgnoreCase("N")) {
             print();
+            System.out.println(" All your course are already printed into csv file !!!");
         } else {
             System.out.println("Your choice is invalid !!!");
             System.out.println("Try Again With (Y/N) only !");
