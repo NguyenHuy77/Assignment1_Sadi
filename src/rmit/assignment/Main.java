@@ -34,18 +34,16 @@ public class Main {
         try {
 
             FileWriter csvWriter = new FileWriter("C:\\assignment\\report.csv");
-            //Print by student name
 
+            //Print by student name
             printByStudentName(csvWriter);
             csvWriter.append("\n");
 
             //Print by course name
-
             printByCourseName(csvWriter);
             csvWriter.append("\n");
 
-            //Print by course name
-
+            //Print by course semester
             printBySemester(csvWriter);
             csvWriter.append("\n");
 
@@ -58,6 +56,7 @@ public class Main {
         }
     }
 
+    //This method is utilized for printing information of course and student by semester
     private void printBySemester(FileWriter csvWriter) throws IOException {
         csvWriter.append("\n");
         csvWriter.append("SEMESTER");
@@ -94,7 +93,7 @@ public class Main {
         }
     }
 
-
+    //This method is utilized for printing information of course and semester by student name
     private void printByStudentName(FileWriter csvWriter) throws IOException {
         csvWriter.append("STUDENT NAME");
         csvWriter.append(",");
@@ -130,6 +129,7 @@ public class Main {
         }
     }
 
+    //This method is utilized for printing information of semester and student by course name
     private void printByCourseName(FileWriter csvWriter) throws IOException {
         csvWriter.append("\n");
         csvWriter.append("COURSE NAME");
@@ -166,32 +166,35 @@ public class Main {
         }
     }
 
+    // This method is utilized for checking the validation of the input of student name
     private void checkStudentNameIsValid(String studentName) throws Exception {
         for (Student student : studentList) {
-            if (student.getName().equalsIgnoreCase(studentName)) {
+            if (student.getName().trim().equalsIgnoreCase(studentName)) {
                 return;
             }
         }
         throw new Exception();
     }
 
+    // This method is utilized for checking the validation of the input of course name
     private void checkCourseNameIsValid(String courseName) throws Exception {
         for (Course course : courseList) {
-            if (course.getName().equalsIgnoreCase(courseName)) {
+            if (course.getName().trim().equalsIgnoreCase(courseName)) {
                 return;
             }
         }
         throw new Exception();
     }
 
+    // This method is used for asking users "UPDATE" or "ENROLL" and checking validation of their input
     private void processAction() {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Do you want to 'UPDATE' or 'ENROLL'? ");
         String action = myObj.nextLine();  // Read user input
 
-        if (action.equalsIgnoreCase(UPDATE)) {
+        if (action.trim().equalsIgnoreCase(UPDATE)) {
             update();
-        } else if (action.equalsIgnoreCase(ENROLL)) {
+        } else if (action.trim().equalsIgnoreCase(ENROLL)) {
             processEnroll();
         } else {
             System.out.println("This input is invalid in this system !!!");
@@ -200,6 +203,7 @@ public class Main {
 
     }
 
+    // This function is utilized to ask users when they want to continue or not
     private void checkContinuing() {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Do you want to continue 'Y' or 'N'? ");
@@ -228,11 +232,13 @@ public class Main {
         } catch (Exception e) {
             System.out.println("This student name is not valid in this system !! ");
             processEnroll();
+            return;
         }
 
         enroll(studentName);
     }
 
+    // This method is used for updating from specific student name
     private void update() {
         Scanner scanner = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
@@ -248,16 +254,17 @@ public class Main {
         } catch (Exception e) {
             System.out.println("This student name is not valid in this system !! ");
             update();
+            return;
         }
 
     }
 
+    // This method is utilized for checking the validation of the "ADD" or "DELETE" input from users
     private void checkAddAndDeleteInputInvalid(String studentName) {
-        viewEnrollmentBy(studentName);
         Scanner scanner = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Do you want to 'ADD' or 'DELETE' course ? ");
         String confirmation = scanner.nextLine();  // Read user input
-        if (confirmation.equalsIgnoreCase(DELETE)) {
+        if (confirmation.trim().equalsIgnoreCase(DELETE)) {
             scanner = new Scanner(System.in);  // Create a Scanner object
             System.out.println("Enter semester that you want to delete: ");
             String semester = scanner.nextLine();  // Read user input
@@ -266,7 +273,7 @@ public class Main {
             System.out.println("------------------------");
             viewEnrollmentBy(studentName);
             checkContinuing();
-        } else if (confirmation.equalsIgnoreCase(ADD)) {
+        } else if (confirmation.trim().equalsIgnoreCase(ADD)) {
             enroll(studentName);
         } else {
             System.out.println("Your input is invalid in the system !!! ");
@@ -275,6 +282,7 @@ public class Main {
 
     }
 
+    // This function is utilized for viewing the list of course and semester of student after enrolling or adding
     private void viewEnrollmentBy(String studentName) {
         List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAllBy(studentName);
         for (StudentEnrollment item : studentEnrollmentList) {
@@ -285,6 +293,7 @@ public class Main {
 
     }
 
+    // This function is used for enrolling student
     private void enroll(String studentName) {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Enter Course (Ex: 'Math for computing', 'Robotic', 'Database concept', 'Business', 'Programming'): ");
@@ -294,11 +303,11 @@ public class Main {
         } catch (Exception e) {
             System.out.println("This course name is not valid in this system !! ");
             enroll(studentName);
+            return;
         }
 
         System.out.println("Enter Semester: ");
         String semester = myObj.nextLine();
-
         Student student = findStudentBy(studentName);
         Course course = findCourseBy(courseName);
         StudentEnrollment studentEnrollment = new StudentEnrollment(student, course, semester);
@@ -321,6 +330,7 @@ public class Main {
 
     }
 
+    // This method is utilized for creating data of student including id, name and birthday
     private void createStudentData() throws ParseException {
         Date date = simpleDateFormat.parse("1997-09-09");
         Student hong = new Student(1, "Hong", date);
@@ -344,6 +354,7 @@ public class Main {
         studentList.add(hung);
     }
 
+    // This method is utilized for creating data of course including id, name and number of credit
     private void createCourseData() {
         Course math = new Course(1, "Math for computing", 12);
         Course programming = new Course(2, "Programming", 12);
