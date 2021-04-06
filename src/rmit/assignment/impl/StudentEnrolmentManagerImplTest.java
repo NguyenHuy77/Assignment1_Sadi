@@ -90,7 +90,7 @@ public class StudentEnrolmentManagerImplTest {
         StudentEnrollment studentEnrollment2 = new StudentEnrollment(student2, course2, semester2);
         studentEnrolmentManager.add(studentEnrollment2);
 
-        Student student3 = new Student(1, "Nam", birthday);
+        Student student3 = new Student(2, "Nam", birthday);
         Course course3 = new Course(1, "Business", 12);
         String semester3 = "2015a";
         StudentEnrollment studentEnrollment3 = new StudentEnrollment(student3, course3, semester3);
@@ -100,5 +100,9 @@ public class StudentEnrolmentManagerImplTest {
         Assert.assertEquals(2, studentEnrolmentManager.getAllBy("Nam").size());
         Assert.assertEquals(1, studentEnrolmentManager.getAllBy("Tung").size());
         Assert.assertEquals(3, studentEnrolmentManager.getAll().size());
+
+
+        Assert.assertEquals(1, studentEnrolmentManager.getAllBy("Nam", 2).size());
     }
+
 }

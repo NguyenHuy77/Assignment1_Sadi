@@ -61,6 +61,8 @@ public class Main {
         csvWriter.append("\n");
         csvWriter.append("SEMESTER");
         csvWriter.append(",");
+        csvWriter.append("STUDENT ID");
+        csvWriter.append(",");
         csvWriter.append("STUDENT NAME");
         csvWriter.append(",");
         csvWriter.append("COURSE NAME");
@@ -82,9 +84,9 @@ public class Main {
             for (int i = 0; i < list.size(); i++) {
                 StudentEnrollment item = list.get(i);
                 if (i == 0) {
-                    csvWriter.append(semester + "," + item.getStudent().getName() + "," + item.getCourse().getName());
+                    csvWriter.append(semester + "," + item.getStudent().getId() + "," + item.getStudent().getName() + "," + item.getCourse().getName());
                 } else {
-                    csvWriter.append("" + "," + item.getStudent().getName() + "," + item.getCourse().getName());
+                    csvWriter.append("" + "," + item.getStudent().getId() + "," + item.getStudent().getName() + "," + item.getCourse().getName());
                 }
                 csvWriter.append("\n");
             }
@@ -95,32 +97,34 @@ public class Main {
 
     //This method is utilized for printing information of course and semester by student name
     private void printByStudentName(FileWriter csvWriter) throws IOException {
+        csvWriter.append("ID");
+        csvWriter.append(",");
         csvWriter.append("STUDENT NAME");
         csvWriter.append(",");
         csvWriter.append("COURSE NAME");
         csvWriter.append(",");
         csvWriter.append("SEMESTER");
         csvWriter.append("\n");
-        Map<String, List<StudentEnrollment>> map = new HashMap<>();
+        Map<Integer, List<StudentEnrollment>> map = new HashMap<>();
         List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAll();
         for (StudentEnrollment item : studentEnrolmentManager.getAll()) {
-            List<StudentEnrollment> list = map.get(item.getStudent().getName());
+            List<StudentEnrollment> list = map.get(item.getStudent().getId());
             if (list == null) {
                 list = new ArrayList<>();
-                map.put(item.getStudent().getName(), list);
+                map.put(item.getStudent().getId(), list);
             }
             list.add(item);
         }
-        for (Map.Entry<String, List<StudentEnrollment>> entry : map.entrySet()) {
-            String name = entry.getKey();
+        for (Map.Entry<Integer, List<StudentEnrollment>> entry : map.entrySet()) {
+            Integer id = entry.getKey();
             List<StudentEnrollment> list = entry.getValue();
 
             for (int i = 0; i < list.size(); i++) {
                 StudentEnrollment item = list.get(i);
                 if (i == 0) {
-                    csvWriter.append(name + "," + item.getCourse().getName() + "," + item.getSemester());
+                    csvWriter.append(item.getStudent().getId() + "," + item.getStudent().getName() + "," + item.getCourse().getName() + "," + item.getSemester());
                 } else {
-                    csvWriter.append("" + "," + item.getCourse().getName() + "," + item.getSemester());
+                    csvWriter.append("" + "," + item.getStudent().getName() + "," + item.getCourse().getName() + "," + item.getSemester());
                 }
                 csvWriter.append("\n");
             }
@@ -133,6 +137,8 @@ public class Main {
     private void printByCourseName(FileWriter csvWriter) throws IOException {
         csvWriter.append("\n");
         csvWriter.append("COURSE NAME");
+        csvWriter.append(",");
+        csvWriter.append("STUDENT ID");
         csvWriter.append(",");
         csvWriter.append("STUDENT NAME");
         csvWriter.append(",");
@@ -155,9 +161,9 @@ public class Main {
             for (int i = 0; i < list.size(); i++) {
                 StudentEnrollment item = list.get(i);
                 if (i == 0) {
-                    csvWriter.append(courseName + "," + item.getStudent().getName() + "," + item.getSemester());
+                    csvWriter.append(courseName + "," + item.getStudent().getId() + "," + item.getStudent().getName() + "," + item.getSemester());
                 } else {
-                    csvWriter.append("" + "," + item.getStudent().getName() + "," + item.getSemester());
+                    csvWriter.append("" + "," + item.getStudent().getId() + "," + item.getStudent().getName() + "," + item.getSemester());
                 }
                 csvWriter.append("\n");
             }
@@ -225,7 +231,7 @@ public class Main {
     private void processEnroll() {
         //enter student, id and course
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-        System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung'): ");
+        System.out.println("Enter Student Name (Ex: 'Hong', 'Nam', 'Tung', 'Tuyet', 'Hung (with id : 5)', 'Hung (with id : 6)': ");
         String studentName = myObj.nextLine();  // Read user input
         try {
             checkStudentNameIsValid(studentName);
@@ -235,7 +241,9 @@ public class Main {
             return;
         }
 
-        enroll(studentName);
+        int id = getIdByStudentName(myObj, studentName);
+
+        enroll(studentName, id);
     }
 
     // This method is used for updating from specific student name
@@ -245,11 +253,12 @@ public class Main {
         String studentName = scanner.nextLine();  // Read user input
         try {
             checkStudentNameIsValid(studentName);
+            int id = getIdByStudentName(scanner, studentName);
             System.out.println("------------------------");
             System.out.println("The list course & semester of" + " " + studentName + " " + "is:");
             System.out.println("------------------------");
-            viewEnrollmentBy(studentName);
-            checkAddAndDeleteInputInvalid(studentName);
+            viewEnrollmentBy(studentName, id);
+            checkAddAndDeleteInputInvalid(studentName, id);
 
         } catch (Exception e) {
             System.out.println("This student name is not valid in this system !! ");
@@ -260,7 +269,7 @@ public class Main {
     }
 
     // This method is utilized for checking the validation of the "ADD" or "DELETE" input from users
-    private void checkAddAndDeleteInputInvalid(String studentName) {
+    private void checkAddAndDeleteInputInvalid(String studentName, int id) {
         Scanner scanner = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Do you want to 'ADD' or 'DELETE' course ? ");
         String confirmation = scanner.nextLine();  // Read user input
@@ -271,30 +280,31 @@ public class Main {
             studentEnrolmentManager.delete(studentName, semester);
             System.out.println("The list of course after deleting is: ");
             System.out.println("------------------------");
-            viewEnrollmentBy(studentName);
+            viewEnrollmentBy(studentName, id);
             checkContinuing();
         } else if (confirmation.trim().equalsIgnoreCase(ADD)) {
-            enroll(studentName);
+            enroll(studentName, id);
         } else {
             System.out.println("Your input is invalid in the system !!! ");
-            checkAddAndDeleteInputInvalid(studentName);
+            checkAddAndDeleteInputInvalid(studentName, id);
         }
 
     }
 
     // This function is utilized for viewing the list of course and semester of student after enrolling or adding
-    private void viewEnrollmentBy(String studentName) {
-        List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAllBy(studentName);
+    private void viewEnrollmentBy(String studentName, int id) {
+        List<StudentEnrollment> studentEnrollmentList = studentEnrolmentManager.getAllBy(studentName, id);
         for (StudentEnrollment item : studentEnrollmentList) {
             System.out.println("Semester: " + item.getSemester());
             System.out.println("Course name: " + item.getCourse().getName());
+            System.out.println("Credit number: 12");
             System.out.println("------------------------");
         }
 
     }
 
     // This function is used for enrolling student
-    private void enroll(String studentName) {
+    private void enroll(String studentName, int id) {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         System.out.println("Enter Course (Ex: 'Math for computing', 'Robotic', 'Database concept', 'Business', 'Programming'): ");
         String courseName = myObj.nextLine();
@@ -302,20 +312,20 @@ public class Main {
             checkCourseNameIsValid(courseName);
         } catch (Exception e) {
             System.out.println("This course name is not valid in this system !! ");
-            enroll(studentName);
+            enroll(studentName, id);
             return;
         }
 
         System.out.println("Enter Semester: ");
         String semester = myObj.nextLine();
-        Student student = findStudentBy(studentName);
+        Student student = findStudentBy(studentName, id);
         Course course = findCourseBy(courseName);
         StudentEnrollment studentEnrollment = new StudentEnrollment(student, course, semester);
         studentEnrolmentManager.add(studentEnrollment);
         System.out.println("------------------------");
         System.out.println("The list course of" + " " + studentName + " " + "after adding/enrolling is: ");
         System.out.println("------------------------");
-        viewEnrollmentBy(studentName);
+        viewEnrollmentBy(studentName, id);
         checkContinuing();
     }
 
@@ -347,11 +357,15 @@ public class Main {
         date = simpleDateFormat.parse("1994-9-1");
         Student hung = new Student(5, "Hung", date);
 
+        date = simpleDateFormat.parse("1995-8-1");
+        Student hung1 = new Student(6, "Hung", date);
+
         studentList.add(hong);
         studentList.add(nam);
         studentList.add(tung);
         studentList.add(tuyet);
         studentList.add(hung);
+        studentList.add(hung1);
     }
 
     // This method is utilized for creating data of course including id, name and number of credit
@@ -369,9 +383,9 @@ public class Main {
 
     }
 
-    private Student findStudentBy(String name) {
+    private Student findStudentBy(String name, int id) {
         for (Student item : studentList) {
-            if (item.getName().equalsIgnoreCase(name)) {
+            if (item.getName().equalsIgnoreCase(name) && item.getId() == id) {
                 return item;
             }
         }
@@ -386,6 +400,50 @@ public class Main {
             }
         }
         return null;
+    }
+
+    // This method is utilized for checking whether the student name is duplicate or not
+    private int getIdByStudentName(Scanner myObj, String studentName) {
+        int numberOfStudent = 0;
+        for (Student student : studentList) {
+            if (student.getName().trim().equalsIgnoreCase(studentName)) {
+                numberOfStudent++;
+            }
+        }
+
+        int id = 0;
+        if (numberOfStudent > 1) {
+            id = checkIdInvalid(myObj);
+        } else {
+            for (Student student : studentList) {
+                if (student.getName().equalsIgnoreCase(studentName)) {
+                    id = student.getId();
+                    break;
+                }
+            }
+        }
+
+        return id;
+    }
+
+    private int checkIdInvalid(Scanner myObj) {
+        System.out.println("Enter ID:  ");
+        Integer id = 0;
+        try {
+            id = Integer.parseInt(myObj.nextLine());  // Read user input
+        } catch (Exception ie) {
+            System.out.println("Invalid ID , again:  ");
+            checkIdInvalid(myObj);
+        }
+
+        for (Student student : studentList) {
+            if (student.getId() == id) {
+                return id;
+            }
+        }
+
+        System.out.println("Invalid ID , again:  ");
+        return checkIdInvalid(myObj);
     }
 
 }
