@@ -1,8 +1,6 @@
 package rmit.assignment.entity;
 
-/**
- * This class keeps the information of student and course
- */
+// This class keeps the information of student and course
 
 public class StudentEnrollment {
     private Student student;

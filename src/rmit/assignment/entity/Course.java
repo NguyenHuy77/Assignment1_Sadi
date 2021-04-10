@@ -1,24 +1,23 @@
 package rmit.assignment.entity;
 
-/**
- * This class define the information of courses
- */
+//This class define the information of courses
+
 public class Course {
-    private int id;
+    private String id;
     private String name;
     private int numberOfCredit;
 
-    public Course(int id, String name, int numberOfCredit) {
+    public Course(String id, String name, int numberOfCredit) {
         this.id = id;
         this.name = name;
         this.numberOfCredit = numberOfCredit;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 

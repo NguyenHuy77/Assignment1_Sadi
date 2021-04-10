@@ -20,8 +20,8 @@ public class StudentEnrolmentManagerImplTest {
 
         Date birthday = new Date(1997, 2, 5);
 
-        Student student = new Student(1, "Nam", birthday);
-        Course course = new Course(1, "Robotic", 12);
+        Student student = new Student("S36555698", "Nam", birthday);
+        Course course = new Course("COSC2012", "Robotic", 12);
         String semester = "2015a";
         StudentEnrollment studentEnrollment = new StudentEnrollment(student, course, semester);
         studentEnrolmentManager.add(studentEnrollment);
@@ -36,8 +36,8 @@ public class StudentEnrolmentManagerImplTest {
         Assert.assertEquals(0, studentEnrolmentManager.getAll().size());
         Date birthday = new Date(1997, 2, 5);
 
-        Student student = new Student(1, "Nam", birthday);
-        Course course = new Course(1, "Robotic", 12);
+        Student student = new Student("S36555698", "Nam", birthday);
+        Course course = new Course("COSC2012", "Robotic", 12);
         String semester = "2015a";
         StudentEnrollment studentEnrollment = new StudentEnrollment(student, course, semester);
         studentEnrolmentManager.add(studentEnrollment);
@@ -54,17 +54,17 @@ public class StudentEnrolmentManagerImplTest {
         //before calling add method
         Assert.assertEquals(0, studentEnrolmentManager.getAll().size());
 
-        Date birthday = new Date(1997, 2, 5);
-        Student student = new Student(1, "Nam", birthday);
-        Course course = new Course(1, "Robotic", 12);
+        Date birthday = new Date(1997, 9, 9);
+        Student student = new Student("S3655207", "Hong", birthday);
+        Course course = new Course("COSC2012", "Robotic", 12);
         String semester = "2015a";
         StudentEnrollment studentEnrollment = new StudentEnrollment(student, course, semester);
         studentEnrolmentManager.add(studentEnrollment);
 
 
         birthday = new Date(1997, 2, 5);
-        Student student1 = new Student(1, "Nam", birthday);
-        Course course1 = new Course(1, "Robotic", 12);
+        Student student1 = new Student("S3655207", "Hong", birthday);
+        Course course1 = new Course("COSC2012 ", "Robotic", 12);
         String semester1 = "2015a";
         StudentEnrollment studentEnrollment1 = new StudentEnrollment(student1, course1, semester1);
         studentEnrolmentManager.add(studentEnrollment);
@@ -77,21 +77,21 @@ public class StudentEnrolmentManagerImplTest {
         Assert.assertEquals(0, studentEnrolmentManager.getAll().size());
 
         Date birthday = new Date(1997, 2, 5);
-        Student student1 = new Student(1, "Nam", birthday);
-        Course course1 = new Course(1, "Robotic", 12);
+        Student student1 = new Student("S3655698", "Nam", birthday);
+        Course course1 = new Course("COSC2012", "Robotic", 12);
         String semester1 = "2015a";
         StudentEnrollment studentEnrollment1 = new StudentEnrollment(student1, course1, semester1);
         studentEnrolmentManager.add(studentEnrollment1);
 
         birthday = new Date(1997, 2, 5);
-        Student student2 = new Student(1, "Tung", birthday);
-        Course course2 = new Course(1, "Programming", 12);
+        Student student2 = new Student("S3526321", "Tung", birthday);
+        Course course2 = new Course("PHYS2153", "Programming", 12);
         String semester2 = "2015a";
         StudentEnrollment studentEnrollment2 = new StudentEnrollment(student2, course2, semester2);
         studentEnrolmentManager.add(studentEnrollment2);
 
-        Student student3 = new Student(2, "Nam", birthday);
-        Course course3 = new Course(1, "Business", 12);
+        Student student3 = new Student("S3655698", "Nam", birthday);
+        Course course3 = new Course("BUS2232", "Business", 12);
         String semester3 = "2015a";
         StudentEnrollment studentEnrollment3 = new StudentEnrollment(student3, course3, semester3);
         studentEnrolmentManager.add(studentEnrollment3);
@@ -102,7 +102,7 @@ public class StudentEnrolmentManagerImplTest {
         Assert.assertEquals(3, studentEnrolmentManager.getAll().size());
 
 
-        Assert.assertEquals(1, studentEnrolmentManager.getAllBy("Nam", 2).size());
+        Assert.assertEquals(1, studentEnrolmentManager.getAllBy("Nam", "2").size());
     }
 
 }

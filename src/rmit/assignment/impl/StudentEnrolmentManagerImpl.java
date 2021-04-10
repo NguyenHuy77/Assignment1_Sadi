@@ -47,10 +47,10 @@ public class StudentEnrolmentManagerImpl implements StudentEnrolmentManager {
     }
 
     @Override
-    public List<StudentEnrollment> getAllBy(String studentName, int id) {
+    public List<StudentEnrollment> getAllBy(String studentName, String id) {
         List<StudentEnrollment> result = new ArrayList<>();
         for (StudentEnrollment item : studentEnrollmentList) {
-            if (item.getStudent().getName().equalsIgnoreCase(studentName) && item.getStudent().getId() == id) {
+            if (item.getStudent().getName().equalsIgnoreCase(studentName) && item.getStudent().getId().equalsIgnoreCase(id)) {
                 result.add(item);
             }
         }

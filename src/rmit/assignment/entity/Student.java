@@ -2,27 +2,24 @@ package rmit.assignment.entity;
 
 import java.util.Date;
 
-/**
- * This class define the information of a student
- */
-
+// This class define the information of a student
 
 public class Student {
-    private int id;
+    private String id;
     private String name;
     private Date birthday;
 
-    public Student(int id, String name, Date birthday) {
+    public Student(String id, String name, Date birthday) {
         this.id = id;
         this.name = name;
         this.birthday = birthday;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
